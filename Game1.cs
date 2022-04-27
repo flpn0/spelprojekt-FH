@@ -9,17 +9,37 @@ namespace spelprojekt_Felix_H
     {
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
-        MouseState mus = Mouse.GetState();
-        MouseState gammalMus = Mouse.GetState();
+       
+
+        KeyboardState tangentbord = Keyboard.GetState();
+        KeyboardState gammalTangentbord = Keyboard.GetState();
+
         Random slump = new Random();
         int scen = 0;
-
-
+        Texture2D Basket;
+        Texture2D parrotPicture;
+        Rectangle parrotRectangle;
+        Color parrotColor = Color.White;
+        Texture2D eggPicture;
+        Rectangle eggRectangle;
+        Texture2D buttonPicture;
+        Rectangle buttonRectangle;
+        string welcomeText = "Collect The Eggs!";
+        Vector2 welcomePosition;
+        SpriteFont arial;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            IsMouseVisible = true;
+
+            if (scen == 1)
+            {
+                IsMouseVisible = false;
+            }
+            else
+            {
+                IsMouseVisible = true;
+            }
         }
 
         protected override void Initialize()
@@ -37,15 +57,25 @@ namespace spelprojekt_Felix_H
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            parrotPicture = Content.Load<Texture2D>("parrot");
+            parrotRectangle = new Rectangle(100, 100, parrotPicture.Width, parrotPicture.Height);
+
+            eggPicture = Content.Load<Texture2D>("zebra");
+            eggRectangle = new Rectangle(100, -5, eggPicture.Width, eggPicture.Height);
+
+            buttonPicture = Content.Load<Texture2D>("button");
+            buttonRectangle = new Rectangle(640 - buttonPicture.Width / 2, 360, buttonPicture.Width, buttonPicture.Height);
+            welcomePosition = new Vector2(640 - arial.MeasureString(welcomeText).X / 2, 100);
+
+
         }
 
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            gammalMus = mus;
-            mus = Mouse.GetState();
+            gammalTangentbord = tangentbord;
+            tangentbord = Keyboard.GetState();
 
             switch(scen)
             {
@@ -56,6 +86,18 @@ namespace spelprojekt_Felix_H
                     UpdateGame();
                     break;
             }
+
+            if (parrotRectangle.Contains(eggRectangle) == true)
+            {
+                parrotColor = Color.Red;
+            }
+            else
+            {
+                parrotColor = Color.White;
+            }
+
+            base.Update(gameTime);
+
 
 
             base.Update(gameTime);
@@ -96,7 +138,7 @@ namespace spelprojekt_Felix_H
 
         public void DrawGame()
         {
-
+            
         }
     }
 }
