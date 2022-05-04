@@ -18,6 +18,7 @@ namespace spelprojekt_Felix_H
         MouseState mus = Mouse.GetState();
         MouseState gammalMus = Mouse.GetState();
 
+        int score = 0;
         int enemySpawnrate = 600;
         int scen = 0;
         Random slump = new Random();
@@ -25,12 +26,16 @@ namespace spelprojekt_Felix_H
         Texture2D basketPicture;
         Rectangle basketRectangle;
         Color basketColor = Color.White;
+
         Texture2D eggPicture;
         Rectangle eggRectangle;
+
         Texture2D buttonPicture;
         Rectangle buttonRectangle;
+
         string welcomeText = "Collect The Eggs!";
         Vector2 welcomePosition;
+
         SpriteFont arial;
 
         List<Rectangle> eggs = new List<Rectangle>();
@@ -69,7 +74,7 @@ namespace spelprojekt_Felix_H
             basketRectangle = new Rectangle(100, 550, basketPicture.Width, basketPicture.Height);
 
             eggPicture = Content.Load<Texture2D>("zebra");
-            eggRectangle = new Rectangle(100, -5, eggPicture.Width, eggPicture.Height);
+            eggRectangle = new Rectangle(100, -100, eggPicture.Width, eggPicture.Height);
 
             arial = Content.Load<SpriteFont>("file");
 
@@ -86,34 +91,8 @@ namespace spelprojekt_Felix_H
                 Exit();
             gammalTangentbord = tangentbord;
             tangentbord = Keyboard.GetState();
-
-            if (enemySpawnrate == 600)
-            {
-                for (int i = 0; i < 5; i++)
-                {
-                    Rectangle eggSpawn = new Rectangle(slump.Next(0, graphics.PreferredBackBufferWidth), slump.Next(-200, -50), eggPicture.Width, eggPicture.Height);
-                    eggs.Add(eggSpawn);
-                }
-                enemySpawnrate = 0;
-            }
-            enemySpawnrate++;
-
-            for (int i = 0; i < eggs.Count; i++)
-            {
-                Rectangle temporary = eggs[eggs.IndexOf(eggs[i])];
-
-                temporary.Y += 3;
-                eggs[eggs.IndexOf(eggs[i])] = temporary;
-            }
-
-            for (int i = 0; i < eggs.Count; i++)
-            {
-                if (eggs[i].Intersects(basketRectangle) == true)
-                {
-                    eggs.RemoveAt(i);
-                    break;
-                }
-            }
+            gammalMus = mus;
+            mus = Mouse.GetState();
 
             switch(scen)
             {
@@ -124,19 +103,6 @@ namespace spelprojekt_Felix_H
                     UpdateGame();
                     break;
             }
-
-            if (basketRectangle.Contains(eggRectangle) == true)
-            {
-                basketColor = Color.Red;
-            }
-            else
-            {
-                basketColor = Color.White;
-            }
-
-
-
-
             base.Update(gameTime);
         }
 
@@ -165,7 +131,7 @@ namespace spelprojekt_Felix_H
             scen = nyscen;
         }
 
-        bool leftMouseClick()
+        public bool leftMouseClick()
         {
             if (mus.LeftButton == ButtonState.Pressed && gammalMus.LeftButton == ButtonState.Released)
             {
@@ -191,7 +157,50 @@ namespace spelprojekt_Felix_H
 
         public void UpdateGame()
         {
+            if (enemySpawnrate == 600)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    Rectangle eggSpawn = new Rectangle(slump.Next(0, 1150), slump.Next(-500, -50), eggPicture.Width, eggPicture.Height);
+                    eggs.Add(eggSpawn);
+                }
+                enemySpawnrate = 0;
+            }
+            enemySpawnrate++;
 
+            for (int i = 0; i < eggs.Count; i++)
+            {
+                Rectangle temporary = eggs[eggs.IndexOf(eggs[i])];
+
+                temporary.Y += 3;
+                eggs[eggs.IndexOf(eggs[i])] = temporary;
+            }
+
+            for (int i = 0; i < eggs.Count; i++)
+            {
+                if (eggs[i].Intersects(basketRectangle) == true)
+                {
+                    eggs.RemoveAt(i);
+                    break;
+                }
+            }
+           
+                for (int i = 0; i < eggs.Count; i++)
+                {
+                    if (eggs[i].Intersects(eggRectangle) == true)
+                    {
+                        eggs.RemoveAt(i);
+                        break;
+                    }
+                }
+            
+           
+
+            if (basketRectangle.Contains(eggRectangle) == true)
+            {
+               // score += newScore;
+            }
+            
         }
 
         public void DrawMenu()
@@ -206,10 +215,18 @@ namespace spelprojekt_Felix_H
 
         public void DrawGame()
         {
+            spriteBatch.Begin();
+
             for (int i = 0; i < eggs.Count; i++)
             {
                 spriteBatch.Draw(eggPicture, eggs[i], Color.White);
             }
+
+            spriteBatch.Draw(basketPicture, basketRectangle, Color.White);
+
+            spriteBatch.End();
+
+            
         }
     }
 }
