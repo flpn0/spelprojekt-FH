@@ -36,7 +36,11 @@ namespace spelprojekt_Felix_H
         string welcomeText = "Collect The Eggs!";
         Vector2 welcomePosition;
 
+        Texture2D bakgrundBild;
+        Rectangle bakgrundPosition;
+
         SpriteFont arial;
+
 
         List<Rectangle> eggs = new List<Rectangle>();
 
@@ -70,17 +74,20 @@ namespace spelprojekt_Felix_H
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            basketPicture = Content.Load<Texture2D>("parrot");
+            basketPicture = Content.Load<Texture2D>("basket");
             basketRectangle = new Rectangle(100, 550, basketPicture.Width, basketPicture.Height);
 
-            eggPicture = Content.Load<Texture2D>("zebra");
-            eggRectangle = new Rectangle(100, -100, eggPicture.Width, eggPicture.Height);
+            eggPicture = Content.Load<Texture2D>("egg");
+            eggRectangle = new Rectangle(100, -100, 128, 128);
 
             arial = Content.Load<SpriteFont>("file");
 
             buttonPicture = Content.Load<Texture2D>("button");
             buttonRectangle = new Rectangle(640 - buttonPicture.Width / 2, 360, buttonPicture.Width, buttonPicture.Height);
             welcomePosition = new Vector2(640 - arial.MeasureString(welcomeText).X / 2, 100);
+
+            bakgrundBild = Content.Load<Texture2D>("minecraft");
+            bakgrundPosition = new Rectangle(0, 0, 1280, 720);
 
 
         }
@@ -110,7 +117,8 @@ namespace spelprojekt_Felix_H
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-           
+
+
 
             switch (scen)
             {
@@ -157,11 +165,13 @@ namespace spelprojekt_Felix_H
 
         public void UpdateGame()
         {
+
+
             if (enemySpawnrate == 600)
             {
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 10; i++)
                 {
-                    Rectangle eggSpawn = new Rectangle(slump.Next(0, 1150), slump.Next(-500, -50), eggPicture.Width, eggPicture.Height);
+                    Rectangle eggSpawn = new Rectangle(slump.Next(0, 1150), slump.Next(-500, -50), 128, 128);
                     eggs.Add(eggSpawn);
                 }
                 enemySpawnrate = 0;
@@ -184,15 +194,19 @@ namespace spelprojekt_Felix_H
                     break;
                 }
             }
-           
+
+            for (int y = 0; y < eggs.Count; y++)
+            {
                 for (int i = 0; i < eggs.Count; i++)
                 {
-                    if (eggs[i].Intersects(eggRectangle) == true)
+                    if (eggs[i].Intersects(eggs[y]) == true && i != y)
                     {
                         eggs.RemoveAt(i);
                         break;
                     }
                 }
+            }
+               
             
            
 
@@ -216,6 +230,8 @@ namespace spelprojekt_Felix_H
         public void DrawGame()
         {
             spriteBatch.Begin();
+
+            spriteBatch.Draw(bakgrundBild, bakgrundPosition, Color.White);
 
             for (int i = 0; i < eggs.Count; i++)
             {
