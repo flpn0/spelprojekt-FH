@@ -121,6 +121,7 @@ namespace spelprojekt_Felix_H
             welcomePosition = new Vector2(640 - MinecraftFont.MeasureString(welcomeText).X / 2, 100);
             gameOverPosition = new Vector2(640 - MinecraftFont.MeasureString(gameOverText).X / 2, 100);
             latestScorePosition = new Vector2(640 - MinecraftFont.MeasureString(latestScore).X / 2, 500);
+            highScorePosition = new Vector2(640 - MinecraftFont.MeasureString(highScore).X / 2, 600);
 
             buttonPicture = Content.Load<Texture2D>("button");
             buttonRectangle = new Rectangle(640 - buttonPicture.Width / 2, 360, buttonPicture.Width, buttonPicture.Height);
@@ -204,6 +205,25 @@ namespace spelprojekt_Felix_H
                 return false;
             }
 
+        }
+
+        public void restartThing()
+        {
+            totemOfUndyingSpawnrate = 0;
+            liv = 1;
+            score = 0;
+            eggSpawnRate = 180;
+            slimeSpawnRate = 0;
+            List<Rectangle> eggs = new List<Rectangle>();
+            List<Rectangle> slimes = new List<Rectangle>();
+            List<Rectangle> totemOfUndyings = new List<Rectangle>();
+            slimes.Clear();
+            for (int i = 0; i < eggs.Count; i++)
+            {
+                eggs.Clear();
+            }
+
+            return;
         }
 
         public void PointCounter()
@@ -318,19 +338,10 @@ namespace spelprojekt_Felix_H
             if (liv == 0)
             {
                 switchMenu(2);
+                restartThing();
             }
 
             
-
-            for (int i = 0; i < totemOfUndyings.Count; i++)
-            {
-                if (totemOfUndyings[i].Intersects(basketRectangle) == true)
-                {
-                    totemOfUndyings.RemoveAt(i);
-                    liv++;
-                    break;
-                }
-            }
 
            
 
@@ -354,6 +365,7 @@ namespace spelprojekt_Felix_H
                     if (eggs[i].Intersects(slimes[y]) == true && i != y)
                     {
                         eggs.RemoveAt(i);
+                       
 
                         break;
                     }
@@ -417,8 +429,6 @@ namespace spelprojekt_Felix_H
             {
                 basketRectangle.X =  1279;
             }
-
-
         }
 
         public void UpdateGameOver()
@@ -428,7 +438,6 @@ namespace spelprojekt_Felix_H
                 switchMenu(0);
             }
             liv = 1;
-
         }
 
         public void DrawMenu()
@@ -462,16 +471,36 @@ namespace spelprojekt_Felix_H
                 spriteBatch.Draw(totemOfUndyingPicture, totemOfUndyings[i], Color.White);
             }
 
-            for (int i = 0; i < liv; i++)
+            /*   for (int i = 0; i < liv; i++)
+               {
+                   spriteBatch.Draw(HP, new Rectangle(50, 650, 50, 50), Color.White);
+
+
+                   if ()
+                   {
+                       spriteBatch.Draw(HP, new Rectangle(i + 200, 650, 50, 50), Color.White);
+                   }
+                   antalLiv++;
+               }
+
+               */
+
+            spriteBatch.Draw(HP, new Rectangle(50, 650, 50, 50), Color.White);
+
+            for (int i = 0; i < totemOfUndyings.Count; i++)
             {
-                spriteBatch.Draw(HP, new Rectangle(50, 650, 50, 50), Color.White);
-
-
-                if (liv > antalLiv)
+                if (totemOfUndyings[i].Intersects(basketRectangle) == true)
                 {
-                    spriteBatch.Draw(HP, new Rectangle(i + 200, 650, 50, 50), Color.White);
+                    totemOfUndyings.RemoveAt(i);
+                    liv++;
+                    for (int y  = 0; y < liv; y++)
+                    {
+                        spriteBatch.Begin();
+                        spriteBatch.Draw(HP, new Rectangle(i + 100, 650, 50, 50), Color.White);
+                        spriteBatch.End();
+                    }
+                    
                 }
-                antalLiv++;
             }
 
             spriteBatch.DrawString(MinecraftFont, scoreText, scoreTextPosition, Color.White);
