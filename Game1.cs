@@ -248,7 +248,7 @@ namespace spelprojekt_Felix_H
 
             if (eggSpawnRate == 180)
             {
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 3; i++)
                 {
                     Rectangle eggSpawn = new Rectangle(random.Next(0, 1150), random.Next(-1000, -100), 128, 128);
                     eggs.Add(eggSpawn);
@@ -451,8 +451,6 @@ namespace spelprojekt_Felix_H
             spriteBatch.Begin();
 
             spriteBatch.Draw(bakgrundBild, bakgrundPosition, Color.White);
-            spriteBatch.DrawString(MinecraftFont, scoreText, scoreTextPosition, Color.White);
-            spriteBatch.Draw(basketPicture, basketRectangle, Color.White);
 
             for (int i = 0; i < eggs.Count; i++)
             {
@@ -473,6 +471,10 @@ namespace spelprojekt_Felix_H
             {
                 spriteBatch.Draw(HP, new Rectangle(i * 50 + 100, 650, 50, 50), Color.White);
             }
+
+            spriteBatch.DrawString(MinecraftFont, scoreText, scoreTextPosition, Color.White);
+            spriteBatch.Draw(basketPicture, basketRectangle, Color.White);
+
 
             spriteBatch.End();
         }
