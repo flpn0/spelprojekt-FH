@@ -14,18 +14,16 @@ namespace spelprojekt_Felix_H
        
 
         KeyboardState tangentbord = Keyboard.GetState();
-        KeyboardState gammalTangentbord = Keyboard.GetState();
         MouseState mus = Mouse.GetState();
         MouseState gammalMus = Mouse.GetState();
 
-        int antalLiv = 0;
         int totemOfUndyingSpawnrate = 0;
-        int liv = 1;
+        int lives = 1;
         int score = 0;
         int eggSpawnRate = 180;
         int slimeSpawnRate = 0;
-        int scen = 0;
-        Random slump = new Random();
+        int scene = 0;
+        Random random = new Random();
         
         Texture2D basketPicture;
         Rectangle basketRectangle;
@@ -39,16 +37,14 @@ namespace spelprojekt_Felix_H
         Texture2D buttonPicture2;
         Rectangle buttonRectangle2;
 
-        string latestScore = "";
-        string highScore = "";
+        
         string gameOverText = "Game Over";
         string scoreText = "";
         string welcomeText = "Collect The Eggs!";
         Vector2 welcomePosition;
         Vector2 scoreTextPosition;
         Vector2 gameOverPosition;
-        Vector2 latestScorePosition;
-        Vector2 highScorePosition;
+        
 
         Texture2D bakgrundBild;
         Rectangle bakgrundPosition;
@@ -72,14 +68,13 @@ namespace spelprojekt_Felix_H
         List<Rectangle> eggs = new List<Rectangle>();
         List<Rectangle> slimes = new List<Rectangle>();
         List<Rectangle> totemOfUndyings = new List<Rectangle>();
-        List<Rectangle> livs = new List<Rectangle>();
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
-            if (scen == 1)
+            if (scene == 1)
             {
                 IsMouseVisible = false;
             }
@@ -91,12 +86,9 @@ namespace spelprojekt_Felix_H
 
         protected override void Initialize()
         {
-
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;
             graphics.ApplyChanges();
-            // TODO: Add your initialization logic here
-
             base.Initialize();
         }
 
@@ -104,8 +96,10 @@ namespace spelprojekt_Felix_H
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            // All pictures and their positions
+
             basketPicture = Content.Load<Texture2D>("basket");
-            basketRectangle = new Rectangle(100, 550, basketPicture.Width, basketPicture.Height);
+            basketRectangle = new Rectangle(graphics.GraphicsDevice.Viewport.Width / 2 - basketPicture.Width / 2, 550, basketPicture.Width, basketPicture.Height);
 
             eggPicture = Content.Load<Texture2D>("egg");
             eggRectangle = new Rectangle(100, -100, 100, 100);
@@ -115,13 +109,6 @@ namespace spelprojekt_Felix_H
 
             totemOfUndyingPicture = Content.Load<Texture2D>("totem");
             totemOfUndyingRectangle = new Rectangle(100, -100, 100, 100);
-
-            MinecraftFont = Content.Load<SpriteFont>("file");
-            scoreTextPosition = new Vector2(100, 100);
-            welcomePosition = new Vector2(640 - MinecraftFont.MeasureString(welcomeText).X / 2, 100);
-            gameOverPosition = new Vector2(640 - MinecraftFont.MeasureString(gameOverText).X / 2, 100);
-            latestScorePosition = new Vector2(640 - MinecraftFont.MeasureString(latestScore).X / 2, 500);
-            highScorePosition = new Vector2(640 - MinecraftFont.MeasureString(highScore).X / 2, 600);
 
             buttonPicture = Content.Load<Texture2D>("button");
             buttonRectangle = new Rectangle(640 - buttonPicture.Width / 2, 360, buttonPicture.Width, buttonPicture.Height);
@@ -138,19 +125,28 @@ namespace spelprojekt_Felix_H
             HP = Content.Load<Texture2D>("heart");
             HPsize = new Rectangle(108, 800 - 108, 50, 50);
 
+            // Font and the position of all text's
 
+            MinecraftFont = Content.Load<SpriteFont>("file");
+            scoreTextPosition = new Vector2(100, 100);
+            welcomePosition = new Vector2(640 - MinecraftFont.MeasureString(welcomeText).X / 2, 100);
+            gameOverPosition = new Vector2(640 - MinecraftFont.MeasureString(gameOverText).X / 2, 100);
+                      
         }
 
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            gammalTangentbord = tangentbord;
+
+
             tangentbord = Keyboard.GetState();
             gammalMus = mus;
             mus = Mouse.GetState();
 
-            switch(scen)
+            // Menysystem (kod)
+
+            switch(scene)
             {
                 case 0:
                     UpdateMenu();
@@ -169,10 +165,9 @@ namespace spelprojekt_Felix_H
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            // Menysystemet (Grafik)
 
-
-
-            switch (scen)
+            switch (scene)
             {
                 case 0:
                     DrawMenu();
@@ -184,14 +179,20 @@ namespace spelprojekt_Felix_H
                     DrawGameOver();
                     break;
             }
-
-
             base.Draw(gameTime);
         }
 
         public void switchMenu(int nyscen)
         {
-            scen = nyscen;
+            scene = nyscen;
+        }
+
+        public void UpdateMenu()
+        {
+            if (leftMouseClick() == true && buttonRectangle.Contains(mus.Position) == true)
+            {
+                switchMenu(1);
+            }
         }
 
         public bool leftMouseClick()
@@ -204,36 +205,29 @@ namespace spelprojekt_Felix_H
             {
                 return false;
             }
-
         }
 
-        public void restartThing()
+        public void restartGame()
         {
+            //Restarts 
+
             totemOfUndyingSpawnrate = 0;
-            liv = 1;
+            lives = 1;
             score = 0;
             eggSpawnRate = 180;
             slimeSpawnRate = 0;
-            List<Rectangle> eggs = new List<Rectangle>();
-            List<Rectangle> slimes = new List<Rectangle>();
-            List<Rectangle> totemOfUndyings = new List<Rectangle>();
-            slimes.Clear();
-            for (int i = 0; i < eggs.Count; i++)
-            {
-                eggs.Clear();
-            }
 
-            return;
+            basketRectangle.Y = 550;
+            basketRectangle.X = graphics.GraphicsDevice.Viewport.Width / 2 - basketRectangle.Width / 2;
+    
+            slimes.Clear();
+            eggs.Clear();
+            totemOfUndyings.Clear();
         }
 
         public void PointCounter()
         {
             scoreText = score.ToString();
-
-            if (scen == 0)
-            {
-                score = 0;
-            }
 
             for (int i = 0; i < eggs.Count; i++)
             {
@@ -244,32 +238,19 @@ namespace spelprojekt_Felix_H
                     break;
                 }
             }
-            
-
         }
-
-        public void UpdateMenu()
-        {
-
-            if (leftMouseClick() == true && buttonRectangle.Contains(mus.Position) == true)
-            {
-                switchMenu(1);
-            }
-            
-        }
-
-        
 
         public void UpdateGame()
         {
-
             PointCounter();
+
+            // Spawning system
 
             if (eggSpawnRate == 180)
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    Rectangle eggSpawn = new Rectangle(slump.Next(0, 1150), slump.Next(-1000, -100), 128, 128);
+                    Rectangle eggSpawn = new Rectangle(random.Next(0, 1150), random.Next(-1000, -100), 128, 128);
                     eggs.Add(eggSpawn);
                 }
                 eggSpawnRate = 0;
@@ -278,50 +259,63 @@ namespace spelprojekt_Felix_H
 
             if (slimeSpawnRate == 300)
             {
-                for (int i = 0; i < 1; i++)
+                for (int i = 0; i < 2; i++)
                 {
-                    Rectangle slimeSpawn = new Rectangle(slump.Next(0, 1150), slump.Next(-100, -100), 96, 96);
+                    Rectangle slimeSpawn = new Rectangle(random.Next(0, 1150), random.Next(-1000, -100), 96, 96);
                     slimes.Add(slimeSpawn);
                 }
                 slimeSpawnRate = 0;
             }
             slimeSpawnRate++;
 
-            if (totemOfUndyingSpawnrate == 120)
+            if (totemOfUndyingSpawnrate == 3000)
             {
                 for (int i = 0; i < 1; i++)
                 {
-                    Rectangle totemSpawn = new Rectangle(slump.Next(0, 1150), slump.Next(-1000, -50), 128, 128);
+                    Rectangle totemSpawn = new Rectangle(random.Next(0, 1150), random.Next(-1000, -100), 128, 128);
                     totemOfUndyings.Add(totemSpawn);
                 }
                 totemOfUndyingSpawnrate = 0;
             }
             totemOfUndyingSpawnrate++;
 
-
+            // Gives the spawned objects a velocity
 
             for (int i = 0; i < eggs.Count; i++)
             {
-                Rectangle temporary = eggs[i];
+                Rectangle egg = eggs[i];
 
-                temporary.Y += 3;
-                eggs[eggs.IndexOf(eggs[i])] = temporary;
+                egg.Y += 3;
+                eggs[i] = egg;
             }
 
             for (int i = 0; i < slimes.Count; i++)
             {
-                Rectangle temporary = slimes[i];
+                Rectangle slime = slimes[i];
 
-                temporary.Y += 3;
-                slimes[slimes.IndexOf(slimes[i])] = temporary;
+                slime.Y += 3;
+                slimes[i] = slime;
             }
 
             for (int i = 0; i < totemOfUndyings.Count; i++)
             {
-                Rectangle temporary = totemOfUndyings[i];
+                Rectangle totem = totemOfUndyings[i];
 
-                temporary.Y += 3;
-                totemOfUndyings[totemOfUndyings.IndexOf(totemOfUndyings[i])] = temporary;
+                totem.Y += 3;
+                totemOfUndyings[i] = totem;
+            }
+
+            // Makes sure no objects collide after spawning
+
+            for (int i = 0; i < totemOfUndyings.Count; i++)
+            {
+                if (totemOfUndyings[i].Intersects(basketRectangle))
+                {
+                    totemOfUndyings.RemoveAt(i);
+                    lives++;
+
+                    break;
+                }
             }
 
             for (int i = 0; i < slimes.Count; i++)
@@ -329,27 +323,17 @@ namespace spelprojekt_Felix_H
                 if (slimes[i].Intersects(basketRectangle) == true)
                 {
                     slimes.RemoveAt(i);
-                    liv--;
+                    lives--;
 
                     break;
                 }
             }
 
-            if (liv == 0)
-            {
-                switchMenu(2);
-                restartThing();
-            }
-
-            
-
-           
-
             for (int y = 0; y < eggs.Count; y++)
             {
                 for (int i = 0; i < eggs.Count; i++)
                 {
-                    if (eggs[i].Intersects(eggs[y]) == true && i != y)
+                    if (eggs[i].Intersects(eggs[y]) && i != y)
                     {
                         eggs.RemoveAt(i);
 
@@ -362,10 +346,9 @@ namespace spelprojekt_Felix_H
             {
                 for (int i = 0; i < eggs.Count; i++)
                 {
-                    if (eggs[i].Intersects(slimes[y]) == true && i != y)
+                    if (eggs[i].Intersects(slimes[y]))
                     {
                         eggs.RemoveAt(i);
-                       
 
                         break;
                     }
@@ -376,7 +359,7 @@ namespace spelprojekt_Felix_H
             {
                 for (int i = 0; i < eggs.Count; i++)
                 {
-                    if (eggs[i].Intersects(totemOfUndyings[y]) == true && i != y)
+                    if (eggs[i].Intersects(totemOfUndyings[y]))
                     {
                         eggs.RemoveAt(i);
 
@@ -389,7 +372,7 @@ namespace spelprojekt_Felix_H
             {
                 for (int i = 0; i < slimes.Count; i++)
                 {
-                    if (slimes[i].Intersects(totemOfUndyings[y]) == true && i != y)
+                    if (slimes[i].Intersects(totemOfUndyings[y]))
                     {
                         slimes.RemoveAt(i);
 
@@ -411,6 +394,20 @@ namespace spelprojekt_Felix_H
                 }
             }
 
+            // Life system
+
+            if (lives == 0)
+            {
+                switchMenu(2);
+                restartGame();
+            }
+
+            if (lives > 3)
+            {
+                lives = 3;
+            }
+
+            // Smooth from side to side system used by the basket to travel smoothly from one side to the other
 
             if (tangentbord.IsKeyDown(Keys.Left) || tangentbord.IsKeyDown(Keys.A))
             {
@@ -437,12 +434,11 @@ namespace spelprojekt_Felix_H
             {
                 switchMenu(0);
             }
-            liv = 1;
+            lives = 1;
         }
 
         public void DrawMenu()
         {
-
             spriteBatch.Begin();
             spriteBatch.Draw(bakrundsMenyBild, bakgrundsMenyPosition, Color.White);
             spriteBatch.DrawString(MinecraftFont, welcomeText, welcomePosition, Color.Brown);
@@ -455,6 +451,8 @@ namespace spelprojekt_Felix_H
             spriteBatch.Begin();
 
             spriteBatch.Draw(bakgrundBild, bakgrundPosition, Color.White);
+            spriteBatch.DrawString(MinecraftFont, scoreText, scoreTextPosition, Color.White);
+            spriteBatch.Draw(basketPicture, basketRectangle, Color.White);
 
             for (int i = 0; i < eggs.Count; i++)
             {
@@ -471,56 +469,20 @@ namespace spelprojekt_Felix_H
                 spriteBatch.Draw(totemOfUndyingPicture, totemOfUndyings[i], Color.White);
             }
 
-            /*   for (int i = 0; i < liv; i++)
-               {
-                   spriteBatch.Draw(HP, new Rectangle(50, 650, 50, 50), Color.White);
-
-
-                   if ()
-                   {
-                       spriteBatch.Draw(HP, new Rectangle(i + 200, 650, 50, 50), Color.White);
-                   }
-                   antalLiv++;
-               }
-
-               */
-
-            spriteBatch.Draw(HP, new Rectangle(50, 650, 50, 50), Color.White);
-
-            for (int i = 0; i < totemOfUndyings.Count; i++)
+            for (int i = 0; i < lives; i++)
             {
-                if (totemOfUndyings[i].Intersects(basketRectangle) == true)
-                {
-                    totemOfUndyings.RemoveAt(i);
-                    liv++;
-                    for (int y  = 0; y < liv; y++)
-                    {
-                        spriteBatch.Begin();
-                        spriteBatch.Draw(HP, new Rectangle(i + 100, 650, 50, 50), Color.White);
-                        spriteBatch.End();
-                    }
-                    
-                }
+                spriteBatch.Draw(HP, new Rectangle(i * 50 + 100, 650, 50, 50), Color.White);
             }
 
-            spriteBatch.DrawString(MinecraftFont, scoreText, scoreTextPosition, Color.White);
-
-            spriteBatch.Draw(basketPicture, basketRectangle, Color.White);
-
             spriteBatch.End();
-
-            
         }
 
         public void DrawGameOver()
         {
             spriteBatch.Begin();
-
             spriteBatch.Draw(bakrundsMenyBild, bakgrundsMenyPosition, Color.White);
             spriteBatch.DrawString(MinecraftFont, gameOverText, gameOverPosition, Color.Brown);
             spriteBatch.Draw(buttonPicture2, buttonRectangle2, Color.White);
-
-
             spriteBatch.End();
         }
     }
